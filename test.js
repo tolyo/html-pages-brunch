@@ -12,7 +12,7 @@ describe('Plugin', function () {
     expect(plugin).to.be.ok;
   });
 
-  it('should has #optimize method', function () {
+  it('should has #compile method', function () {
     expect(plugin.compile).to.be.an.instanceof(Function);
   });
 
