@@ -9,7 +9,7 @@ Install the plugin via npm with `npm install --save html-pages-brunch`.
 
 Or, do manual install:
 
-* Add `"html-pages-brunch": "1.0.0"` to `package.json` of your brunch app.
+* Add `"html-pages-brunch": "1.0.2"` to `package.json` of your brunch app.
 * If you want to use git version of plugin, add
 `"html-pages-brunch": "git@github.com:tolyo/html-pages-brunch.git"`.
 
