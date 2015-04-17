@@ -19,20 +19,21 @@ for example:
 ```coffeescript
 config =
   plugins:
-    htmlMin :
-      removeComments: false,
-      removeCommentsFromCDATA: false,
-      removeCDATASectionsFromCDATA: false,
-      collapseBooleanAttributes: false,
-      useShortDoctype: false,
-      removeEmptyAttributes: false,
-      removeScriptTypeAttributes: false,
-      removeStyleLinkTypeAttributes: false,
-      collapseWhitespace: false,
-      minifyJS: false,
-      minifyCSS: false
+    htmlPages:
+      htmlMin :
+        removeComments: false
+        removeCommentsFromCDATA: false
+        removeCDATASectionsFromCDATA: false
+        collapseBooleanAttributes: false
+        useShortDoctype: false
+        removeEmptyAttributes: false
+        removeScriptTypeAttributes: false
+        removeStyleLinkTypeAttributes: false
+        collapseWhitespace: false
+        minifyJS: false
+        minifyCSS: false
     destination : (path) ->
-            path.replace /^app[\/\\](.*)\.html$/, "$1.html"
+      path.replace /^app[\/\\](.*)\.html$/, "$1.html"
 ```
 
 ## License
