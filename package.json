@@ -14,6 +14,7 @@
   },
   "dependencies": {
     "html-minifier": "~0.7.0",
+    "lodash": "*",
     "mkdirp": "~0.3.5"
   },
   "devDependencies": {
