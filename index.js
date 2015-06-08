@@ -37,13 +37,14 @@ HtmlPages.prototype.DEFAULT_HTMLMIN_OPTIONS = {
   removeStyleLinkTypeAttributes: true,
   collapseWhitespace: true,
   minifyJS: true,
-  minifyCSS: true
+  minifyCSS: true,
+  disabled: false
 };
 
 HtmlPages.prototype.compile = function (data, path, callback) {
   var destinationDir, destinationPath, err, error, result;
   try {
-    result = minify(data, this.htmlMinOptions);
+	result = this.htmlMinOptions.disabled? data: minify(data, this.htmlMinOptions);
     destinationPath = this.destinationFn(path);
     destinationPath = fspath.join(this.publicPath, destinationPath);
     destinationDir = fspath.dirname(destinationPath);
