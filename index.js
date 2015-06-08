@@ -12,6 +12,7 @@ function HtmlPages(config) {
   if (config.plugins === undefined) config.plugins = {};
   var pluginConfig = config.plugins.htmlPages || {};
   this.destinationFn = pluginConfig.destination || this.DEFAULT_DESTINATION_FN;
+  this.disabled = pluginConfig.disabled || this.DISABLED_SETTING;
   this.htmlMinOptions = pluginConfig.htmlMin ?
     _.clone(pluginConfig.htmlMin) :
     this.DEFAULT_HTMLMIN_OPTIONS;
@@ -37,14 +38,15 @@ HtmlPages.prototype.DEFAULT_HTMLMIN_OPTIONS = {
   removeStyleLinkTypeAttributes: true,
   collapseWhitespace: true,
   minifyJS: true,
-  minifyCSS: true,
-  disabled: false
+  minifyCSS: true
 };
+
+HtmlPages.prototype.DISABLED_SETTING = false;
 
 HtmlPages.prototype.compile = function (data, path, callback) {
   var destinationDir, destinationPath, err, error, result;
   try {
-	result = this.htmlMinOptions.disabled? data: minify(data, this.htmlMinOptions);
+    result = this.disabled ? data : minify(data, this.htmlMinOptions);
     destinationPath = this.destinationFn(path);
     destinationPath = fspath.join(this.publicPath, destinationPath);
     destinationDir = fspath.dirname(destinationPath);

@@ -2,38 +2,41 @@
 Adds [html-minifier](https://github.com/kangax/html-minifier) support to
 [brunch](http://brunch.io).
 
-The plugin will minify your HTML templates located outside of `assets` directory.
+The plugin will minify your HTML templates located outside of `assets` directory, which is a must if you're working
+with templates in a folders-by-feature structure.
 
 ## Usage
 Install the plugin via npm with `npm install --save html-pages-brunch`.
 
 Or, do manual install:
 
-* Add `"html-pages-brunch": "*.*.*"` to `package.json` of your brunch app.
+* Add `"html-pages-brunch": "x.y.z"` to `package.json` of your brunch app.
 * If you want to use git version of plugin, add
 `"html-pages-brunch": "git@github.com:tolyo/html-pages-brunch.git"`.
 
-To specify html-pages-brunch options, use `config.plugins.htmlPages` object,
-for example:
+To specify html-pages-brunch options, use `config.plugins.htmlPages` object to specify `htmlMin` and `destination` settings.
+The plugin can be disabled with a `disabled` setting.
+For example:
 
 ```coffeescript
 config =
   plugins:
     htmlPages:
       htmlMin :
-        removeComments: false
-        removeCommentsFromCDATA: false
-        removeCDATASectionsFromCDATA: false
-        collapseBooleanAttributes: false
-        useShortDoctype: false
-        removeEmptyAttributes: false
-        removeScriptTypeAttributes: false
-        removeStyleLinkTypeAttributes: false
-        collapseWhitespace: false
-        minifyJS: false
-        minifyCSS: false
-    destination : (path) ->
-      path.replace /^app[\/\\](.*)\.html$/, "$1.html"
+        removeComments: true
+        removeCommentsFromCDATA: true
+        removeCDATASectionsFromCDATA: true
+        collapseBooleanAttributes: true
+        useShortDoctype: true
+        removeEmptyAttributes: true
+        removeScriptTypeAttributes: true
+        removeStyleLinkTypeAttributes: true
+        collapseWhitespace: true
+        minifyJS: true
+        minifyCSS: true
+      destination : (path) ->
+        path.replace /^app[\/\\](.*)\.html$/, "$1.html"
+      disable: false
 ```
 
 ## License
