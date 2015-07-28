@@ -15,7 +15,7 @@ Or, do manual install:
 `"html-pages-brunch": "git@github.com:tolyo/html-pages-brunch.git"`.
 
 To specify html-pages-brunch options, use `config.plugins.htmlPages` object to specify `htmlMin` and `destination` settings.
-The plugin can be disabled with a `disable` setting.
+The plugin can be disabled with a `disabled` setting.
 For example:
 
 ```coffeescript
@@ -36,7 +36,7 @@ config =
         minifyCSS: true
       destination : (path) ->
         path.replace /^app[\/\\](.*)\.html$/, "$1.html"
-      disable: false
+      disabled: false
 ```
 
 ## License
