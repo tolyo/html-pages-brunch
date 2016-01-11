@@ -1,6 +1,6 @@
 {
   "name": "html-pages-brunch",
-  "version": "1.0.7",
+  "version": "1.0.8",
   "description": "Adds HTMLMinifier support to brunch",
   "author": "Anatoly Ostrovsky (anatolyostrovsky@gmail.com)",
   "homepage": "https://github.com/tolyo/html-pages-brunch",
@@ -13,13 +13,13 @@
     "test": "node_modules/.bin/mocha"
   },
   "dependencies": {
-    "html-minifier": "~0.7.0",
+    "html-minifier": "~1.1.1",
     "lodash": "*",
-    "mkdirp": "~0.3.5"
+    "mkdirp": "~0.5.1"
   },
   "devDependencies": {
-    "mocha": "~1.17.1",
-    "chai": "~1.9.0"
+    "mocha": "~2.3.4",
+    "chai": "~3.4.1"
   },
   "bugs": {
     "url": "https://github.com/tolyo/html-pages-brunch/issues"
