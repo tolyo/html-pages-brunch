@@ -13,6 +13,7 @@ function HtmlPages(config) {
   var pluginConfig = config.plugins.htmlPages || {};
   this.destinationFn = pluginConfig.destination || this.DEFAULT_DESTINATION_FN;
   this.disabled = pluginConfig.disabled || this.DISABLED_SETTING;
+  this.pattern = pluginConfig.pattern || this.DEFAULT_PATTERN;
   this.htmlMinOptions = pluginConfig.htmlMin ?
     _.clone(pluginConfig.htmlMin) :
     this.DEFAULT_HTMLMIN_OPTIONS;
@@ -21,7 +22,8 @@ function HtmlPages(config) {
 
 HtmlPages.prototype.brunchPlugin = true;
 HtmlPages.prototype.type = "template";
-HtmlPages.prototype.extension = "html";
+
+HtmlPages.prototype.DEFAULT_PATTERN = /\.html$/;
 
 HtmlPages.prototype.DEFAULT_DESTINATION_FN = function (path) {
   return path.replace(/^app[\/\\](.*)\.html$/, "$1.html");
