@@ -7,7 +7,7 @@ with templates in a folders-by-feature structure. The plugin provides a default 
 used in production environment.
 
 ## Usage
-Install the plugin via npm with `npm install --save html-pages-brunch`.
+Install the plugin via npm with `npm install --save-dev html-pages-brunch`.
 
 Or, do manual install:
 
