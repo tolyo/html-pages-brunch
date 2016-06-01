@@ -18,11 +18,12 @@ To specify html-pages-brunch options, use `config.plugins.htmlPages` object to s
 The plugin can be disabled with a `disabled` setting.
 For example:
 
-```coffeescript
-config =
-  plugins:
-    htmlPages:
-      htmlMin :
+```javascript
+module.exports = {
+  // OPTIONAL settings. No settings are required by default.
+  plugins: {
+    htmlPages: {
+      htmlMin: {
         removeComments: true
         removeCommentsFromCDATA: true
         removeCDATASectionsFromCDATA: true
@@ -34,9 +35,14 @@ config =
         collapseWhitespace: true
         minifyJS: true
         minifyCSS: true
-      destination : (path) ->
-        path.replace /^app[\/\\](.*)\.html$/, "$1.html"
+      },
+      destination(path) {
+        return path.replace(/^app[\/\\](.*)\.html$/, "$1.html");
+      },
       disabled: false
+    }
+  }
+}
 ```
 
 ## License
