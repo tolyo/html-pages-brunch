@@ -48,7 +48,6 @@ HtmlPages.prototype.DEFAULT_HTMLMIN_OPTIONS = {
   removeComments: true,
   removeEmptyAttributes: true,
   removeOptionalTags: true,
-  removeRedundantAttributes: true,
   removeScriptTypeAttributes: true,
   removeStyleLinkTypeAttributes: true,
   sortAttributes: true,
