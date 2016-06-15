@@ -1,6 +1,8 @@
 global.expect = require('chai').expect;
 global.Plugin = require('./');
 var fs = require('fs');
+var Plugin = require('./');
+
 describe('Plugin', function () {
   var plugin;
 
