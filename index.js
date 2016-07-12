@@ -1,56 +1,10 @@
 'use strict';
 
-var minify = require('html-minifier').minify,
-  fs = require('fs'),
-  fspath = require('path'),
-  mkdirp = require('mkdirp'),
-  _ = require('lodash');
+const minify = require('html-minifier').minify;
+const sysPath = require('path');
 
-class HtmlPages {
-
-  constructor(config) {
-    this.publicPath = fspath.resolve(config.paths['public']);
-
-    if (config === undefined) config = {};
-    if (config.plugins === undefined) config.plugins = {};
-    const pluginConfig = config.plugins.htmlPages || {};
-    this.destinationFn = pluginConfig.destination || this.DEFAULT_DESTINATION_FN;
-    this.disabled = pluginConfig.disabled || this.DISABLED_SETTING;
-    this.pattern = pluginConfig.pattern || this.DEFAULT_PATTERN;
-    this.htmlMinOptions = pluginConfig.htmlMin ?
-      _.clone(pluginConfig.htmlMin) :
-      this.DEFAULT_HTMLMIN_OPTIONS;
-  }
-
-  DEFAULT_DESTINATION_FN(path) {
-    return path.replace(/^app[\/\\](.*)\.html$/, '$1.html');
-  }
-
-  compile(data, path, callback) {
-    let destinationDir, destinationPath, err, error, result;
-    try {
-      result = this.disabled ? data : minify(data, this.htmlMinOptions);
-      destinationPath = this.destinationFn(path);
-      destinationPath = fspath.join(this.publicPath, destinationPath);
-      destinationDir = fspath.dirname(destinationPath);
-      mkdirp.sync(destinationDir);
-      return fs.writeFileSync(destinationPath, result);
-    } catch (_error) {
-      err = _error;
-      console.error(`Error while processing '${path}': ${err.toString()}`);
-      return error = err;
-    } finally {
-      return callback(error, '');
-    }
-  }
-}
-
-HtmlPages.prototype.brunchPlugin = true;
-HtmlPages.prototype.type = 'template';
-
-HtmlPages.prototype.DEFAULT_PATTERN = /\.html$/;
-
-HtmlPages.prototype.DEFAULT_HTMLMIN_OPTIONS = {
+const DEFAULT_PATTERN = /\.html$/;
+const DEFAULT_HTMLMIN_OPTIONS = {
   caseSensitive: false,
   collapseBooleanAttributes: true,
   collapseInlineTagWhitespace: false,
@@ -74,6 +28,39 @@ HtmlPages.prototype.DEFAULT_HTMLMIN_OPTIONS = {
   sortClassName: true
 };
 
-HtmlPages.prototype.DISABLED_SETTING = false;
+const DEFAULT_DESTINATION_FN = path => {
+  return path.replace(/^app[\/\\]/, '');
+};
+
+class HtmlPages {
+  constructor(config) {
+    if (config === undefined) config = {};
+    if (config.plugins === undefined) config.plugins = {};
+
+    const pluginConfig = config.plugins.htmlPages || {};
+    this.publicPath = config.paths.public;
+    this.destinationFn = pluginConfig.destination || DEFAULT_DESTINATION_FN;
+    this.disabled = pluginConfig.disabled;
+    this.pattern = pluginConfig.pattern || DEFAULT_PATTERN;
+    this.htmlMinOptions = pluginConfig.htmlMin ?
+      Object.assign({}, pluginConfig.htmlMin) :
+      DEFAULT_HTMLMIN_OPTIONS;
+  }
+
+  optimize(file) {
+    const data = file.data;
+    const path = file.path;
+
+    return new Promise(resolve => {
+      resolve({
+        data: this.disabled ? data : minify(data, this.htmlMinOptions),
+        path: sysPath.join(this.publicPath, this.destinationFn(path))
+      });
+    });
+  }
+}
+
+HtmlPages.prototype.brunchPlugin = true;
+HtmlPages.prototype.type = 'template';
 
 module.exports = HtmlPages;
