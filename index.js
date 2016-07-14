@@ -2,6 +2,8 @@
 
 const minify = require('html-minifier').minify;
 const sysPath = require('path');
+const mkdirp = require('mkdirp');
+const fs = require('fs');
 
 const DEFAULT_PATTERN = /\.html$/;
 const DEFAULT_HTMLMIN_OPTIONS = {
@@ -40,23 +42,28 @@ class HtmlPages {
     const pluginConfig = config.plugins.htmlPages || {};
     this.publicPath = config.paths.public;
     this.destinationFn = pluginConfig.destination || DEFAULT_DESTINATION_FN;
-    this.disabled = pluginConfig.disabled;
+    this.disabled = !config.optimize || pluginConfig.disabled;
     this.pattern = pluginConfig.pattern || DEFAULT_PATTERN;
     this.htmlMinOptions = pluginConfig.htmlMin ?
       Object.assign({}, pluginConfig.htmlMin) :
       DEFAULT_HTMLMIN_OPTIONS;
   }
 
-  optimize(file) {
-    const data = file.data;
-    const path = file.path;
-
-    return new Promise(resolve => {
-      resolve({
-        data: this.disabled ? data : minify(data, this.htmlMinOptions),
-        path: sysPath.join(this.publicPath, this.destinationFn(path))
-      });
-    });
+  compile(file, path, callback) {
+    let err, error;
+    try {
+      const result = this.disabled ? file : minify(file, this.htmlMinOptions);
+      const destinationPath = sysPath.join(this.publicPath, this.destinationFn(path));
+      const destinationDir = sysPath.dirname(destinationPath);
+      mkdirp.sync(destinationDir);
+      return fs.writeFileSync(destinationPath, result);
+    } catch (_error) {
+      err = _error;
+      console.error('Error while processing \'${path}\': ${err.toString()');
+      return error = err;
+    } finally {
+      return callback(error, '');
+    }
   }
 }
 
