@@ -16,7 +16,12 @@ Or, do manual install:
 `"html-pages-brunch": "git@github.com:tolyo/html-pages-brunch.git"`.
 
 To specify html-pages-brunch options, use `plugins.htmlPages` object to specify `htmlMin` and `destination` settings.
+
+For _development_, the minification is disabled by default. You can enable it by setting `optimize` to `true`.
+For _production_, the minification is enabled by default.
+
 The plugin can be disabled with a `disabled` setting.
+
 For example:
 
 ```javascript
