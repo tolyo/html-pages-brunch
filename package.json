@@ -1,6 +1,6 @@
 {
   "name": "html-pages-brunch",
-  "version": "2.3.0",
+  "version": "2.3.1",
   "description": "Adds HTMLMinifier support to brunch",
   "author": "Anatoly Ostrovsky (anatolyostrovsky@gmail.com)",
   "homepage": "https://github.com/tolyo/html-pages-brunch",

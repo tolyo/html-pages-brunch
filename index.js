@@ -73,7 +73,7 @@ class HtmlPages {
 
     return new Promise(resolve => {
       resolve({
-        data: this.compileAssets && !this.disabled ? data : minify(data, this.htmlMinOptions),
+        data: this.compileAssets && !this.disabled ? minify(data, this.htmlMinOptions) : data,
         path: sysPath.join(this.publicPath, this.destinationFn(path))
       });
     });
