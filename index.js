@@ -1,7 +1,6 @@
 'use strict';
 
 const minify = require('html-minifier').minify;
-const sysPath = require('path');
 const mkdirp = require('mkdirp');
 const fs = require('fs');
 
@@ -30,18 +29,12 @@ const DEFAULT_HTMLMIN_OPTIONS = {
   sortClassName: true
 };
 
-const DEFAULT_DESTINATION_FN = path => {
-  return path.replace(/^app[\/\\]/, '');
-};
-
 class HtmlPages {
   constructor(config) {
     if (config === undefined) config = {};
     if (config.plugins === undefined) config.plugins = {};
 
     const pluginConfig = config.plugins.htmlPages || {};
-    this.publicPath = config.paths.public;
-    this.destinationFn = pluginConfig.destination || DEFAULT_DESTINATION_FN;
     this.disabled = !config.optimize || pluginConfig.disabled;
     this.pattern = pluginConfig.pattern || DEFAULT_PATTERN;
     this.htmlMinOptions = pluginConfig.htmlMin ?
@@ -49,25 +42,20 @@ class HtmlPages {
       DEFAULT_HTMLMIN_OPTIONS;
   }
 
-  compile(file, path, callback) {
-    let err, error;
-    try {
-      const result = this.disabled ? file : minify(file, this.htmlMinOptions);
-      const destinationPath = sysPath.join(this.publicPath, this.destinationFn(path));
-      const destinationDir = sysPath.dirname(destinationPath);
-      mkdirp.sync(destinationDir);
-      return fs.writeFileSync(destinationPath, result);
-    } catch (_error) {
-      err = _error;
-      console.error('Error while processing \'${path}\': ${err.toString()');
-      return error = err;
-    } finally {
-      return callback(error, '');
-    }
+  compileStatic(file) {
+    return new Promise((resolve, reject) => {
+      fs.readFile(file.path, 'utf8', (err, data) => {
+        const result = this.disabled ? data : minify(data, this.htmlMinOptions);
+        if (err) return reject(err);
+        resolve(result);
+      });
+    });
   }
 }
 
 HtmlPages.prototype.brunchPlugin = true;
 HtmlPages.prototype.type = 'template';
+HtmlPages.prototype.extension = 'html';
+HtmlPages.prototype.staticTargetExtension = 'html';
 
 module.exports = HtmlPages;
