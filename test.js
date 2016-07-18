@@ -16,4 +16,24 @@ describe('Plugin', () => {
     expect(plugin.compileStatic).to.be.a('function');
   });
 
+  it('should has #compile method', () => {
+    expect(plugin.compile).to.be.a('function');
+  });
+
+  it('should compile and produce a build file', function (done) {
+    plugin.htmlMin = {
+      removeComments: true
+    };
+
+    var content = '<!-- some comment --><p>blah</p>';
+
+    plugin.compile(content, '', function (error) {
+      expect(error).not.to.be.ok;
+      var path = "./build";
+      expect(fs.existsSync(path)).to.be.ok;
+      fs.unlinkSync(path);
+      done();
+    });
+  });
+
 });

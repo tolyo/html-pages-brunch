@@ -22,6 +22,8 @@ For _production_, the minification is enabled by default.
 
 The plugin can be disabled with a `disabled` setting.
 
+To enable minification of `.html` files inside assets folder use `compileAssets` setting. 
+
 For example:
 
 ```javascript
@@ -55,7 +57,8 @@ module.exports = {
       destination(path) {
         return path.replace(/^app[\/\\](.*)\.html$/, "$1.html");
       },
-      disabled: false
+      disabled: false,
+      compileAssets: true
     }
   }
 }
