@@ -34,6 +34,7 @@ const DEFAULT_HTMLMIN_OPTIONS = {
 const DEFAULT_DESTINATION_FN = path => {
   return path.replace(/^app[\/\\]/, '');
 };
+const DEFAULT_FRONT_MATTER_SEPARATOR = '---';
 
 class HtmlPages {
   constructor(config) {
@@ -46,6 +47,7 @@ class HtmlPages {
     this.disabled = !config.optimize || pluginConfig.disabled;
     this.pattern = pluginConfig.pattern || DEFAULT_PATTERN;
     this.preserveFrontMatter = !!pluginConfig.preserveFrontMatter;
+    this.frontMatterSeparator = pluginConfig.frontMatterSeparator || DEFAULT_FRONT_MATTER_SEPARATOR;
     this.htmlMinOptions = pluginConfig.htmlMin ?
       Object.assign({}, pluginConfig.htmlMin) :
       DEFAULT_HTMLMIN_OPTIONS;
@@ -67,7 +69,10 @@ class HtmlPages {
 
       if (!this.disabled && this.preserveFrontMatter) {
         // add back front matter
-        contents = '---\n' + frontmatter.frontmatter + '\n---\n' + result;
+        contents = this.frontMatterSeparator + '\n' +
+          frontmatter.frontmatter + '\n' +
+          this.frontMatterSeparator + '\n' +
+          result;
       } else {
         contents = result;
       }
