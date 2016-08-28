@@ -4,6 +4,7 @@ const minify = require('html-minifier').minify;
 const sysPath = require('path');
 const mkdirp = require('mkdirp');
 const fs = require('fs');
+const fm = require('front-matter');
 
 const DEFAULT_PATTERN = /\.html$/;
 const DEFAULT_HTMLMIN_OPTIONS = {
@@ -44,6 +45,7 @@ class HtmlPages {
     this.destinationFn = pluginConfig.destination || DEFAULT_DESTINATION_FN;
     this.disabled = !config.optimize || pluginConfig.disabled;
     this.pattern = pluginConfig.pattern || DEFAULT_PATTERN;
+    this.preserveFrontMatter = !!pluginConfig.preserveFrontMatter;
     this.htmlMinOptions = pluginConfig.htmlMin ?
       Object.assign({}, pluginConfig.htmlMin) :
       DEFAULT_HTMLMIN_OPTIONS;
@@ -51,13 +53,24 @@ class HtmlPages {
   }
 
   compile(file, path, callback) {
-    let err, error;
+    let err, error, contents, frontmatter;
     try {
-      const result = this.disabled ? file : minify(file, this.htmlMinOptions);
+      if (!this.disabled && this.preserveFrontMatter) {
+        frontmatter = fm(file);
+        contents = frontmatter.body;
+      } else {
+        contents = file;
+      }
+      const result = this.disabled ? contents : minify(contents, this.htmlMinOptions);
       const destinationPath = sysPath.join(this.publicPath, this.destinationFn(path));
       const destinationDir = sysPath.dirname(destinationPath);
       mkdirp.sync(destinationDir);
-      return fs.writeFileSync(destinationPath, result);
+      if (!this.disabled && this.preserveFrontMatter) {
+        fs.writeFileSync(destinationPath, '---\n' + frontmatter.frontmatter + '\n---\n');
+        return fs.appendFileSync(destinationPath, result);
+      } else {
+        return fs.writeFileSync(destinationPath, result);
+      }
     } catch (_error) {
       err = _error;
       console.error('Error while processing \'${path}\': ${err.toString()');

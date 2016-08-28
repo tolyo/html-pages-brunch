@@ -36,4 +36,21 @@ describe('Plugin', () => {
     });
   });
 
+  it('should compile and preserve front matter', function (done) {
+    plugin.preserveFrontMatter = true;
+
+    var content = '---\ntitle: 123\n---\n<p>blah</p>';
+
+    plugin.compile(content, '', function (error) {
+      expect(error).not.to.be.ok;
+      var path = "./build";
+      expect(fs.existsSync(path)).to.be.ok;
+
+      const filecontents = fs.readFileSync(path);
+      expect(filecontents.toString()).to.contain(content);
+
+      fs.unlinkSync(path);
+      done();
+    });
+  });
 });
