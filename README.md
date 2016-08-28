@@ -3,7 +3,7 @@ Adds [html-minifier](https://github.com/kangax/html-minifier) support to
 [brunch](http://brunch.io).
 
 The plugin will compile, validate and minify your HTML templates located outside of `assets` directory, which is a must if you're working
-with templates in a folders-by-feature structure. The plugin provides a default optimization, ready to be 
+with templates in a folders-by-feature structure. The plugin provides a default optimization, ready to be
 used in production environment.
 
 ## Usage
@@ -22,13 +22,13 @@ For _production_, the minification is enabled by default.
 
 The plugin can be disabled with a `disabled` setting.
 
-To enable minification of `.html` files inside assets folder use `compileAssets` setting. 
+To enable minification of `.html` files inside assets folder use `compileAssets` setting.
 
 For example:
 
 ```javascript
 module.exports = {
-  // OPTIONAL settings. No settings are required by default. 
+  // OPTIONAL settings. No settings are required by default.
   plugins: {
     htmlPages: {
       htmlMin: {
@@ -58,7 +58,9 @@ module.exports = {
         return path.replace(/^app[\/\\](.*)\.html$/, "$1.html");
       },
       disabled: false,
-      compileAssets: true
+      compileAssets: true,
+      preserveFrontMatter: false,
+      frontMatterSeparator: '---'
     }
   }
 }
@@ -87,4 +89,3 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
-
