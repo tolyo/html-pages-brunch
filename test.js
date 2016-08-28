@@ -7,6 +7,7 @@ describe('Plugin', () => {
   const plugin = new Plugin({
     paths: {public: 'build'}
   });
+  plugin.disabled = false;
 
   it('should be an object', () => {
     expect(plugin).to.be.an('object');
@@ -36,10 +37,15 @@ describe('Plugin', () => {
     });
   });
 
-  it('should compile and preserve front matter', function (done) {
-    plugin.preserveFrontMatter = true;
+  it('should compile and minify front matter', function (done) {
+    plugin.htmlMin = {
+      preserveLineBreaks: false,
+      collapseWhitespace: true
+    };
+    plugin.preserveFrontMatter = false;
 
-    var content = '---\ntitle: 123\n---\n<p>blah</p>';
+    var content = '---\ntitle: test\nname: test\n---\n<p>blah</p>';
+    var minified = '--- title: test name: test ---<p>blah';
 
     plugin.compile(content, '', function (error) {
       expect(error).not.to.be.ok;
@@ -47,7 +53,54 @@ describe('Plugin', () => {
       expect(fs.existsSync(path)).to.be.ok;
 
       const filecontents = fs.readFileSync(path);
-      expect(filecontents.toString()).to.contain(content);
+      expect(filecontents.toString()).to.equal(minified);
+
+      fs.unlinkSync(path);
+      done();
+    });
+  });
+
+  it('should compile and preserve front matter', function (done) {
+    plugin.preserveFrontMatter = true;
+    plugin.htmlMin = {
+      preserveLineBreaks: false,
+      collapseWhitespace: true
+    };
+
+    var content = '---\ntitle: test\nname: test\n---\n<p>blah</p>';
+    var minified = '---\ntitle: test\nname: test\n---\n<p>blah';
+
+    plugin.compile(content, '', function (error) {
+      expect(error).not.to.be.ok;
+      var path = "./build";
+      expect(fs.existsSync(path)).to.be.ok;
+
+      const filecontents = fs.readFileSync(path);
+      expect(filecontents.toString()).to.equal(minified);
+
+      fs.unlinkSync(path);
+      done();
+    });
+  });
+
+  it('should compile and preserve front matter with unique separator', function (done) {
+    plugin.preserveFrontMatter = true;
+    plugin.frontMatterSeparator = '= yaml =';
+    plugin.htmlMin = {
+      preserveLineBreaks: false,
+      collapseWhitespace: true
+    };
+
+    var content = '= yaml =\ntitle: test\nname: test\n= yaml =\n<p>blah</p>';
+    var minified = '= yaml =\ntitle: test\nname: test\n= yaml =\n<p>blah';
+
+    plugin.compile(content, '', function (error) {
+      expect(error).not.to.be.ok;
+      var path = "./build";
+      expect(fs.existsSync(path)).to.be.ok;
+
+      const filecontents = fs.readFileSync(path);
+      expect(filecontents.toString()).to.equal(minified);
 
       fs.unlinkSync(path);
       done();
