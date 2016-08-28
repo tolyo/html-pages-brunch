@@ -67,7 +67,7 @@ class HtmlPages {
 
       if (!this.disabled && this.preserveFrontMatter) {
         // add back front matter
-        contents = "---\n" + frontmatter.frontmatter + "\n---\n" + result;
+        contents = '---\n' + frontmatter.frontmatter + '\n---\n' + result;
       } else {
         contents = result;
       }
