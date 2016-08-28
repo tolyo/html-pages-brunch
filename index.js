@@ -56,21 +56,26 @@ class HtmlPages {
     let err, error, contents, frontmatter;
     try {
       if (!this.disabled && this.preserveFrontMatter) {
+        // strip out front matter
         frontmatter = fm(file);
         contents = frontmatter.body;
       } else {
         contents = file;
       }
+
       const result = this.disabled ? contents : minify(contents, this.htmlMinOptions);
+
+      if (!this.disabled && this.preserveFrontMatter) {
+        // add back front matter
+        contents = "---\n" + frontmatter.yaml + "\n---\n" + result;
+      } else {
+        contents = result;
+      }
+
       const destinationPath = sysPath.join(this.publicPath, this.destinationFn(path));
       const destinationDir = sysPath.dirname(destinationPath);
       mkdirp.sync(destinationDir);
-      if (!this.disabled && this.preserveFrontMatter) {
-        fs.writeFileSync(destinationPath, '---\n' + frontmatter.frontmatter + '\n---\n');
-        return fs.appendFileSync(destinationPath, result);
-      } else {
-        return fs.writeFileSync(destinationPath, result);
-      }
+      return fs.writeFileSync(destinationPath, contents);
     } catch (_error) {
       err = _error;
       console.error('Error while processing \'${path}\': ${err.toString()');
