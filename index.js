@@ -46,6 +46,7 @@ class HtmlPages {
     this.destinationFn = pluginConfig.destination || DEFAULT_DESTINATION_FN;
     this.disabled = !config.optimize || pluginConfig.disabled;
     this.pattern = pluginConfig.pattern || DEFAULT_PATTERN;
+    this.removeFrontMatter = !!pluginConfig.removeFrontMatter;
     this.preserveFrontMatter = !!pluginConfig.preserveFrontMatter;
     this.frontMatterSeparator = pluginConfig.frontMatterSeparator || DEFAULT_FRONT_MATTER_SEPARATOR;
     this.htmlMinOptions = pluginConfig.htmlMin ?
@@ -60,17 +61,21 @@ class HtmlPages {
       if (this.disabled) {
         result = file;
       } else {
-        if (!this.preserveFrontMatter) {
+        if (!this.preserveFrontMatter && !this.removeFrontMatter) {
           result = minify(file, this.htmlMinOptions);
         } else {
-          // strip out front matter
           const frontmatter = fm(file);
 
-          // minify and add back front matter
-          result = this.frontMatterSeparator + '\n' +
-            frontmatter.frontmatter + '\n' +
-            this.frontMatterSeparator + '\n' +
-            minify(frontmatter.body, this.htmlMinOptions);
+          if (this.removeFrontMatter) {
+            // strip out front matter
+            result = minify(frontmatter.body, this.htmlMinOptions);
+          } else {
+            // minify and add back front matter
+            result = this.frontMatterSeparator + '\n' +
+              frontmatter.frontmatter + '\n' +
+              this.frontMatterSeparator + '\n' +
+              minify(frontmatter.body, this.htmlMinOptions);
+          }
         }
       }
 

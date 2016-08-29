@@ -59,6 +59,7 @@ module.exports = {
       },
       disabled: false,
       compileAssets: true,
+      removeFrontMatter: false,
       preserveFrontMatter: false,
       frontMatterSeparator: '---'
     }

@@ -37,7 +37,7 @@ describe('Plugin', () => {
     });
   });
 
-  it('should compile and minify front matter', function (done) {
+  it('should minify front matter', function (done) {
     plugin.htmlMin = {
       preserveLineBreaks: false,
       collapseWhitespace: true
@@ -60,8 +60,32 @@ describe('Plugin', () => {
     });
   });
 
-  it('should compile and preserve front matter', function (done) {
+  it('should remove front matter', function (done) {
+    plugin.htmlMin = {
+      preserveLineBreaks: false,
+      collapseWhitespace: true
+    };
+    plugin.removeFrontMatter = true;
+
+    var content = '---\ntitle: test\nname: test\n---\n<p>blah</p>';
+    var minified = '<p>blah';
+
+    plugin.compile(content, '', function (error) {
+      expect(error).not.to.be.ok;
+      var path = "./build";
+      expect(fs.existsSync(path)).to.be.ok;
+
+      const filecontents = fs.readFileSync(path);
+      expect(filecontents.toString()).to.equal(minified);
+
+      fs.unlinkSync(path);
+      done();
+    });
+  });
+
+  it('should preserve front matter', function (done) {
     plugin.preserveFrontMatter = true;
+    plugin.removeFrontMatter = false;
     plugin.htmlMin = {
       preserveLineBreaks: false,
       collapseWhitespace: true
@@ -83,8 +107,9 @@ describe('Plugin', () => {
     });
   });
 
-  it('should compile and preserve front matter with unique separator', function (done) {
+  it('should preserve front matter with unique separator', function (done) {
     plugin.preserveFrontMatter = true;
+    plugin.removeFrontMatter = false;
     plugin.frontMatterSeparator = '= yaml =';
     plugin.htmlMin = {
       preserveLineBreaks: false,
