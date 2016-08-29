@@ -55,35 +55,32 @@ class HtmlPages {
   }
 
   compile(file, path, callback) {
-    let err, error, contents, frontmatter;
+    let err, error, result;
     try {
-      if (!this.disabled && this.preserveFrontMatter) {
-        // strip out front matter
-        frontmatter = fm(file);
-        contents = frontmatter.body;
+      if (this.disabled) {
+        result = file;
       } else {
-        contents = file;
-      }
+        if (!this.preserveFrontMatter) {
+          result = minify(file, this.htmlMinOptions);
+        } else {
+          // strip out front matter
+          const frontmatter = fm(file);
 
-      const result = this.disabled ? contents : minify(contents, this.htmlMinOptions);
-
-      if (!this.disabled && this.preserveFrontMatter) {
-        // add back front matter
-        contents = this.frontMatterSeparator + '\n' +
-          frontmatter.frontmatter + '\n' +
-          this.frontMatterSeparator + '\n' +
-          result;
-      } else {
-        contents = result;
+          // minify and add back front matter
+          result = this.frontMatterSeparator + '\n' +
+            frontmatter.frontmatter + '\n' +
+            this.frontMatterSeparator + '\n' +
+            minify(frontmatter.body, this.htmlMinOptions);
+        }
       }
 
       const destinationPath = sysPath.join(this.publicPath, this.destinationFn(path));
       const destinationDir = sysPath.dirname(destinationPath);
       mkdirp.sync(destinationDir);
-      return fs.writeFileSync(destinationPath, contents);
+      return fs.writeFileSync(destinationPath, result);
     } catch (_error) {
       err = _error;
-      console.error('Error while processing \'${path}\': ${err.toString()');
+      console.error('Error while processing \'${path}\': ${err.toString()}');
       return error = err;
     } finally {
       return callback(error, '');
