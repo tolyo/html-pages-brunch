@@ -24,6 +24,12 @@ The plugin can be disabled with a `disabled` setting.
 
 To enable minification of `.html` files inside assets folder use `compileAssets` setting.
 
+Front Matter will be minified by default with `html-minifier`.  You can choose to override this setting using the following properties:
+* `preserveFrontMatter` - Leaves the front matter untouched
+* `removeFrontMatter` - Removes the front matter completely
+* `forceRemoveFrontMatter` - Allows removing the front matter even when `disabled` is true
+* `frontMatterSeparator` - Allows configuring the front matter separator (defaults to `---`)
+
 For example:
 
 ```javascript
@@ -59,8 +65,9 @@ module.exports = {
       },
       disabled: false,
       compileAssets: true,
-      removeFrontMatter: false,
       preserveFrontMatter: false,
+      removeFrontMatter: false,
+      forceRemoveFrontMatter: false,
       frontMatterSeparator: '---'
     }
   }

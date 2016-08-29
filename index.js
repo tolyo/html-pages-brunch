@@ -46,7 +46,8 @@ class HtmlPages {
     this.destinationFn = pluginConfig.destination || DEFAULT_DESTINATION_FN;
     this.disabled = !config.optimize || pluginConfig.disabled;
     this.pattern = pluginConfig.pattern || DEFAULT_PATTERN;
-    this.removeFrontMatter = !!pluginConfig.removeFrontMatter;
+    this.forceRemoveFrontMatter = !!pluginConfig.forceRemoveFrontMatter;
+    this.removeFrontMatter = this.forceRemoveFrontMatter || !!pluginConfig.removeFrontMatter;
     this.preserveFrontMatter = !!pluginConfig.preserveFrontMatter;
     this.frontMatterSeparator = pluginConfig.frontMatterSeparator || DEFAULT_FRONT_MATTER_SEPARATOR;
     this.htmlMinOptions = pluginConfig.htmlMin ?
@@ -58,8 +59,14 @@ class HtmlPages {
   compile(file, path, callback) {
     let err, error, result;
     try {
+      const frontmatter = fm(file);
+
       if (this.disabled) {
-        result = file;
+        if (this.forceRemoveFrontMatter) {
+          result = frontmatter.body;
+        } else {
+          result = file;
+        }
       } else {
         if (!this.preserveFrontMatter && !this.removeFrontMatter) {
           result = minify(file, this.htmlMinOptions);
