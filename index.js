@@ -36,6 +36,34 @@ const DEFAULT_DESTINATION_FN = path => {
 };
 const DEFAULT_FRONT_MATTER_SEPARATOR = '---';
 
+const performMinify = (htmlPages, data) => {
+  if (htmlPages.disabled) {
+    if (htmlPages.forceRemoveFrontMatter) {
+      const frontmatter = fm(data);
+      return frontmatter.body;
+    } else {
+      return data;
+    }
+  } else {
+    if (!htmlPages.preserveFrontMatter && !htmlPages.removeFrontMatter) {
+      return minify(data, htmlPages.htmlMinOptions);
+    } else {
+      if (htmlPages.removeFrontMatter) {
+        // strip out front matter
+        const frontmatter = fm(data);
+        return minify(frontmatter.body, htmlPages.htmlMinOptions);
+      } else {
+        // minify and add back front matter
+        const frontmatter = fm(data);
+        return htmlPages.frontMatterSeparator + '\n' +
+          frontmatter.frontmatter + '\n' +
+          htmlPages.frontMatterSeparator + '\n' +
+          minify(frontmatter.body, htmlPages.htmlMinOptions);
+      }
+    }
+  }
+};
+
 class HtmlPages {
   constructor(config) {
     if (config === undefined) config = {};
@@ -57,35 +85,9 @@ class HtmlPages {
   }
 
   compile(file, path, callback) {
-    let err, error, result;
+    let err, error;
     try {
-      const frontmatter = fm(file);
-
-      if (this.disabled) {
-        if (this.forceRemoveFrontMatter) {
-          result = frontmatter.body;
-        } else {
-          result = file;
-        }
-      } else {
-        if (!this.preserveFrontMatter && !this.removeFrontMatter) {
-          result = minify(file, this.htmlMinOptions);
-        } else {
-          const frontmatter = fm(file);
-
-          if (this.removeFrontMatter) {
-            // strip out front matter
-            result = minify(frontmatter.body, this.htmlMinOptions);
-          } else {
-            // minify and add back front matter
-            result = this.frontMatterSeparator + '\n' +
-              frontmatter.frontmatter + '\n' +
-              this.frontMatterSeparator + '\n' +
-              minify(frontmatter.body, this.htmlMinOptions);
-          }
-        }
-      }
-
+      const result = performMinify(this, file);
       const destinationPath = sysPath.join(this.publicPath, this.destinationFn(path));
       const destinationDir = sysPath.dirname(destinationPath);
       mkdirp.sync(destinationDir);
@@ -105,7 +107,7 @@ class HtmlPages {
 
     return new Promise(resolve => {
       resolve({
-        data: this.compileAssets && !this.disabled ? minify(data, this.htmlMinOptions) : data,
+        data: this.compileAssets ? performMinify(this, data) : data,
         path: sysPath.join(this.publicPath, this.destinationFn(path))
       });
     });
