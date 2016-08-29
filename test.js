@@ -152,7 +152,7 @@ describe('Plugin', () => {
       path: "./build"
     };
 
-    it('should compile and produce a build file', function (done) {
+    it('should compile', function (done) {
       plugin.disabled = false;
       plugin.compileAssets = true;
 
