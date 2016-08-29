@@ -39,16 +39,7 @@ describe('Plugin', () => {
     var content = '<!-- some comment --><p>blah</p>';
     var minified = '<p>blah';
 
-    plugin.compile(content, '', function (error) {
-      expect(error).not.to.be.ok;
-      expect(fs.existsSync(path)).to.be.ok;
-
-      const filecontents = fs.readFileSync(path);
-      expect(filecontents.toString()).to.equal(minified);
-
-      fs.unlinkSync(path);
-      done();
-    });
+    testCompile(content, minified, done);
   });
 
   it('should minify front matter', function (done) {
@@ -61,16 +52,7 @@ describe('Plugin', () => {
     var content = '---\ntitle: test\nname: test\n---\n<p>blah</p>';
     var minified = '--- title: test name: test ---<p>blah';
 
-    plugin.compile(content, '', function (error) {
-      expect(error).not.to.be.ok;
-      expect(fs.existsSync(path)).to.be.ok;
-
-      const filecontents = fs.readFileSync(path);
-      expect(filecontents.toString()).to.equal(minified);
-
-      fs.unlinkSync(path);
-      done();
-    });
+    testCompile(content, minified, done);
   });
 
   it('should preserve front matter', function (done) {
@@ -85,17 +67,7 @@ describe('Plugin', () => {
     var content = '---\ntitle: test\nname: test\n---\n<p>blah</p>';
     var minified = '---\ntitle: test\nname: test\n---\n<p>blah';
 
-    plugin.compile(content, '', function (error) {
-      expect(error).not.to.be.ok;
-      var path = "./build";
-      expect(fs.existsSync(path)).to.be.ok;
-
-      const filecontents = fs.readFileSync(path);
-      expect(filecontents.toString()).to.equal(minified);
-
-      fs.unlinkSync(path);
-      done();
-    });
+    testCompile(content, minified, done);
   });
 
   it('should preserve front matter with custom separator', function (done) {
@@ -111,17 +83,7 @@ describe('Plugin', () => {
     var content = '= yaml =\ntitle: test\nname: test\n= yaml =\n<p>blah</p>';
     var minified = '= yaml =\ntitle: test\nname: test\n= yaml =\n<p>blah';
 
-    plugin.compile(content, '', function (error) {
-      expect(error).not.to.be.ok;
-      var path = "./build";
-      expect(fs.existsSync(path)).to.be.ok;
-
-      const filecontents = fs.readFileSync(path);
-      expect(filecontents.toString()).to.equal(minified);
-
-      fs.unlinkSync(path);
-      done();
-    });
+    testCompile(content, minified, done);
   });
 
   it('should remove front matter', function (done) {
@@ -135,16 +97,7 @@ describe('Plugin', () => {
     var content = '---\ntitle: test\nname: test\n---\n<p>blah</p>';
     var minified = '<p>blah';
 
-    plugin.compile(content, '', function (error) {
-      expect(error).not.to.be.ok;
-      expect(fs.existsSync(path)).to.be.ok;
-
-      const filecontents = fs.readFileSync(path);
-      expect(filecontents.toString()).to.equal(minified);
-
-      fs.unlinkSync(path);
-      done();
-    });
+    testCompile(content, minified, done);
   });
 
   it('should not remove front matter when disabled', function (done) {
@@ -157,16 +110,7 @@ describe('Plugin', () => {
 
     var content = '---\ntitle: test\nname: test\n---\n<p>blah</p>';
 
-    plugin.compile(content, '', function (error) {
-      expect(error).not.to.be.ok;
-      expect(fs.existsSync(path)).to.be.ok;
-
-      const filecontents = fs.readFileSync(path);
-      expect(filecontents.toString()).to.equal(content);
-
-      fs.unlinkSync(path);
-      done();
-    });
+    testCompile(content, content, done);
   });
 
   it('should force remove front matter when disabled', function (done) {
@@ -180,15 +124,19 @@ describe('Plugin', () => {
     var content = '---\ntitle: test\nname: test\n---\n<p>blah</p>';
     var minified = '<p>blah</p>';
 
+    testCompile(content, minified, done);
+  });
+
+  function testCompile(content, expected, done) {
     plugin.compile(content, '', function (error) {
       expect(error).not.to.be.ok;
       expect(fs.existsSync(path)).to.be.ok;
 
       const filecontents = fs.readFileSync(path);
-      expect(filecontents.toString()).to.equal(minified);
+      expect(filecontents.toString()).to.equal(expected);
 
       fs.unlinkSync(path);
       done();
     });
-  });
+  }
 });
