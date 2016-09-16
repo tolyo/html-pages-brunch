@@ -4,6 +4,7 @@ const minify = require('html-minifier').minify;
 const sysPath = require('path');
 const mkdirp = require('mkdirp');
 const fs = require('fs');
+const fm = require('front-matter');
 
 const DEFAULT_PATTERN = /\.html$/;
 const DEFAULT_HTMLMIN_OPTIONS = {
@@ -33,6 +34,35 @@ const DEFAULT_HTMLMIN_OPTIONS = {
 const DEFAULT_DESTINATION_FN = path => {
   return path.replace(/^app[\/\\]/, '');
 };
+const DEFAULT_FRONT_MATTER_SEPARATOR = '---';
+
+const performMinify = (htmlPages, data) => {
+  if (htmlPages.disabled) {
+    if (htmlPages.forceRemoveFrontMatter) {
+      const frontmatter = fm(data);
+      return frontmatter.body;
+    } else {
+      return data;
+    }
+  } else {
+    if (!htmlPages.preserveFrontMatter && !htmlPages.removeFrontMatter) {
+      return minify(data, htmlPages.htmlMinOptions);
+    } else {
+      if (htmlPages.removeFrontMatter) {
+        // strip out front matter
+        const frontmatter = fm(data);
+        return minify(frontmatter.body, htmlPages.htmlMinOptions);
+      } else {
+        // minify and add back front matter
+        const frontmatter = fm(data);
+        return htmlPages.frontMatterSeparator + '\n' +
+          frontmatter.frontmatter + '\n' +
+          htmlPages.frontMatterSeparator + '\n' +
+          minify(frontmatter.body, htmlPages.htmlMinOptions);
+      }
+    }
+  }
+};
 
 class HtmlPages {
   constructor(config) {
@@ -44,6 +74,10 @@ class HtmlPages {
     this.destinationFn = pluginConfig.destination || DEFAULT_DESTINATION_FN;
     this.disabled = !config.optimize || pluginConfig.disabled;
     this.pattern = pluginConfig.pattern || DEFAULT_PATTERN;
+    this.forceRemoveFrontMatter = !!pluginConfig.forceRemoveFrontMatter;
+    this.removeFrontMatter = this.forceRemoveFrontMatter || !!pluginConfig.removeFrontMatter;
+    this.preserveFrontMatter = !!pluginConfig.preserveFrontMatter;
+    this.frontMatterSeparator = pluginConfig.frontMatterSeparator || DEFAULT_FRONT_MATTER_SEPARATOR;
     this.htmlMinOptions = pluginConfig.htmlMin ?
       Object.assign({}, pluginConfig.htmlMin) :
       DEFAULT_HTMLMIN_OPTIONS;
@@ -53,14 +87,14 @@ class HtmlPages {
   compile(file, path, callback) {
     let err, error;
     try {
-      const result = this.disabled ? file : minify(file, this.htmlMinOptions);
+      const result = performMinify(this, file);
       const destinationPath = sysPath.join(this.publicPath, this.destinationFn(path));
       const destinationDir = sysPath.dirname(destinationPath);
       mkdirp.sync(destinationDir);
       return fs.writeFileSync(destinationPath, result);
     } catch (_error) {
       err = _error;
-      console.error('Error while processing \'${path}\': ${err.toString()');
+      console.error('Error while processing \'${path}\': ${err.toString()}');
       return error = err;
     } finally {
       return callback(error, '');
@@ -73,7 +107,7 @@ class HtmlPages {
 
     return new Promise(resolve => {
       resolve({
-        data: this.compileAssets && !this.disabled ? minify(data, this.htmlMinOptions) : data,
+        data: this.compileAssets ? performMinify(this, data) : data,
         path: sysPath.join(this.publicPath, this.destinationFn(path))
       });
     });
