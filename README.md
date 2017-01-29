@@ -2,9 +2,9 @@
 Adds [html-minifier](https://github.com/kangax/html-minifier) support to
 [brunch](http://brunch.io).
 
-The plugin will compile, validate and minify your HTML templates located outside of `assets` directory, which is a must if you're working
-with templates in a folders-by-feature structure. The plugin provides a default optimization, ready to be
-used in production environment.
+The plugin will compile, reload-on-save, validate and minify your HTML templates located outside of `assets` directory. This  allows to architect your project with templates in a folders-by-feature structure, as well as receive instantaneous visual and semanctic feedback on the changes to your markup. 
+
+The plugin provides a default optimization, ready to be used in production environment.
 
 ## Usage
 Install the plugin via npm with `npm install --save-dev html-pages-brunch`.
