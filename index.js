@@ -31,9 +31,8 @@ const DEFAULT_HTMLMIN_OPTIONS = {
   sortClassName: true
 };
 
-const DEFAULT_DESTINATION_FN = path => {
-  return path.replace(/^app[\/\\]/, '');
-};
+const DEFAULT_DESTINATION_FN = path => path.replace(/^app[\/\\]/, '');
+
 const DEFAULT_FRONT_MATTER_SEPARATOR = '---';
 
 const performMinify = (htmlPages, data) => {
@@ -65,6 +64,7 @@ const performMinify = (htmlPages, data) => {
 };
 
 class HtmlPages {
+
   constructor(config) {
     if (config === undefined) config = {};
     if (config.plugins === undefined) config.plugins = {};
